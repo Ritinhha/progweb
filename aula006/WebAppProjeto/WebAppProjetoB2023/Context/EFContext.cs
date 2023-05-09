@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
-namespace WebAppProjetoB2023.Context
+namespace WebAppProjetoB2023.Models
 {
-    public class EFContext
+    public class EFContext : DbContext
     {
+        public EFContext() : base("Asp_Net_MVC_CS") { }
+        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<FabricanteId> Fabricantes { get; set; }
     }
 }
