@@ -246,6 +246,7 @@
     <Content Include="Views\Produtos\_PorFabricante.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Produtos\PorCategoria.cshtml" />
+    <Content Include="Views\Homes\IndexComProdutosdoFabricante.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
