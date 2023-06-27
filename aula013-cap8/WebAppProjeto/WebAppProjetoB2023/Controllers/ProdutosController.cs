@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using WebAppProjetoB2023.Models;
 using System.Data.Entity;
 using System.Net;
+using System.IO;
 
 namespace WebAppProjetoB2023.Controllers
 {
@@ -74,22 +75,10 @@ namespace WebAppProjetoB2023.Controllers
                 return View(produto);
             }
         }
-        public Produto ObterProdutoPorId(long id)
-        {
-            return context.Produtos.Where(p => p.ProdutoId == id).Include(c => c.Categoria).
-            Include(f => f.Fabricante).First();
-        }
-        public FileContentResult GetLogotipo(long id)
-        {
-            Produto produto = ObterProdutoPorId(id);
-            if (produto != null)
-            {
-                return File(produto.Logotipo, produto.LogotipoMimeType);
-            }
-            return null;
-        }
+
         [HttpPost]
-        public ActionResult Edit(Produto produto, HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
+        public ActionResult Edit(Produto produto,
+HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         {
             return GravarProduto(produto, logotipo, chkRemoverImagem);
         }
@@ -109,14 +98,10 @@ namespace WebAppProjetoB2023.Controllers
             {
                 return View();
             }
+        }
 
-        }
-        private byte[] SetLogotipo(HttpPostedFileBase logotipo)
-        {
-            var bytesLogotipo = new byte[logotipo.ContentLength];
-            logotipo.InputStream.Read(bytesLogotipo, 0, logotipo.ContentLength);
-            return bytesLogotipo;
-        }
+        //Metodos
+
         public void GravarProduto(Produto produto)
         {
             if (produto.ProdutoId == null)
@@ -128,6 +113,73 @@ namespace WebAppProjetoB2023.Controllers
                 context.Entry(produto).State = EntityState.Modified;
             }
             context.SaveChanges();
+        }
+        private void PopularViewBag(Produto produto = null)
+        {
+            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(c => c.Nome), "CategoriaId", "Nome", produto.CategoriaId);
+            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(f => f.Nome), "FabricanteId", "Nome", produto.FabricanteId);
+        }
+        private byte[] SetLogotipo(HttpPostedFileBase logotipo)
+        {
+            var bytesLogotipo = new byte[logotipo.ContentLength];//reservou espaço para os conteudos do byte(arquivo)
+            logotipo.InputStream.Read(bytesLogotipo, 0, logotipo.ContentLength);//pega o conteudo
+            return bytesLogotipo;
+
+        }
+        public Produto ObterProdutoPorId(long id)//Encontra o Produto com a imagem
+        {
+            return context.Produtos.Where(p => p.ProdutoId == id).Include(c => c.Categoria).
+            Include(f => f.Fabricante).First();
+        }
+        public FileContentResult GetLogotipo(long id)//retorna a imagem, não salva no servidor, mas sim no BD
+        {
+            Produto produto = ObterProdutoPorId(id);
+            if (produto != null)
+            {
+                return File(produto.Logotipo, produto.LogotipoMimeType);
+            }
+            return null;
+        }
+        public ActionResult DownloadArquivo(long id)
+        {
+            try
+            {
+                Produto produto = ObterProdutoPorId(id);
+                FileStream fileStream = new FileStream(Server.MapPath(
+                "~/App_Data/" + produto.NomeArquivo), FileMode.Create, FileAccess.Write);//cria um arquivo na pasta padrao
+                fileStream.Write(produto.Logotipo, 0,
+                Convert.ToInt32(produto.TamanhoArquivo));
+                fileStream.Close();
+                return File(fileStream.Name, produto.LogotipoMimeType, produto.NomeArquivo);
+            }
+            catch
+            {
+                return RedirectToAction("Edit/" + id.ToString());
+            }
+           
+        }
+        public FileContentResult GetLogotipo2(long id)//so salva no servidor, mas não no BD
+        {
+            Produto produto = ObterProdutoPorId(id);
+            if (produto != null)
+            {
+                if (produto.NomeArquivo != null)
+                {
+                    var bytesLogotipo = new byte[produto.TamanhoArquivo];
+                    FileStream fileStream = new
+                    FileStream(Server.MapPath("~/App_Data/" + produto.NomeArquivo), FileMode.Open,
+                    FileAccess.Read);
+                    fileStream.Read(bytesLogotipo, 0, (int)produto.TamanhoArquivo);
+                    return File(bytesLogotipo, produto.LogotipoMimeType);
+                }
+            }
+            return null;
+        }
+        public ActionResult DownloadArquivo2(long id)
+        {
+            Produto produto = ObterProdutoPorId(id);
+            FileStream fileStream = new FileStream(Server.MapPath("~/App_Data/" + produto.NomeArquivo), FileMode.Open, FileAccess.Read);
+            return File(fileStream.Name, produto.LogotipoMimeType, produto.NomeArquivo);
         }
         private ActionResult GravarProduto(Produto produto, HttpPostedFileBase logotipo, string chkRemoverImagem)
         {
@@ -143,25 +195,31 @@ namespace WebAppProjetoB2023.Controllers
                     {
                         produto.LogotipoMimeType = logotipo.ContentType;
                         produto.Logotipo = SetLogotipo(logotipo);
+                        produto.NomeArquivo = logotipo.FileName;
+                        produto.TamanhoArquivo = logotipo.ContentLength;
+                        //salva no BD
+
+
+                        string strFileName = Server.MapPath("~/App_Data/") + Path.GetFileName(logotipo.FileName);
+                        logotipo.SaveAs(strFileName);
+                        //salva no local
+
+                        //se os dis tiverem aqui o arquivo duplica
                     }
                     GravarProduto(produto);
                     return RedirectToAction("Index");
                 }
                 PopularViewBag(produto);
                 return View(produto);
-                }
-                 catch
-                {
+            }
+            catch
+            {
                 PopularViewBag(produto);
                 return View(produto);
             }
         }
-        private void PopularViewBag( Produto produto = null)
-        {
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(c => c.Nome), "CategoriaId", "Nome", produto.CategoriaId);
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(f => f.Nome), "FabricanteId", "Nome", produto.FabricanteId);
-        }
+
 
     }
-             
+
 }

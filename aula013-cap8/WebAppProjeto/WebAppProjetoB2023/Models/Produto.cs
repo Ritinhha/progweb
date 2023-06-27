@@ -18,7 +18,9 @@ namespace WebAppProjetoB2023.Models
 
         public Categoria Categoria { get; set; }// para carregar o objeto com o auxilio da chave estrangeiro
         public Fabricante Fabricante { get; set; }
+        public string NomeArquivo { get; set; }
+        public long TamanhoArquivo { get; set; }
 
-       
+
     }
 }
