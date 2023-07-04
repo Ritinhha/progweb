@@ -1,11 +1,15 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+
 using System.Linq;
 using System.Web;
+using System.Data.Entity;
 using Modelo.Tabelas;
 using Modelo.Cadastros;
-namespace WebAppProjetoB2023.Models
+using System.Data.Entity.ModelConfiguration.Conventions;
+
+namespace Persistencia.Context
 {
     public class EFContext : DbContext
     {
@@ -17,5 +21,10 @@ namespace WebAppProjetoB2023.Models
         public DbSet<Categoria> Categorias { get; set; } // faz uma tabela com base na classe Categoria
         public DbSet<Fabricante> Fabricantes { get; set; }
         public DbSet<Produto> Produtos { get; set; }
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+        }
     }
 }

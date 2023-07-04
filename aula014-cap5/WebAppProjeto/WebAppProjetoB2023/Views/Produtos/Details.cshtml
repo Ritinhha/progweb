@@ -1,4 +1,4 @@
-﻿@model WebAppProjetoB2023.Models.Produto
+﻿@model Modelo.Cadastros.Produto
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -58,8 +58,7 @@
 </div>
 @section ScriptPage {
     <script type="text/javascript">
-        $(document).ready(function ()
-        {
+        $(document).ready(function () {
             $('li').removeClass("active");
             $('#liProdutos').addClass("active");
         });

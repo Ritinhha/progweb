@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{672FB8D0-E5F9-4F36-AEC1-E975AD354457}</ProjectGuid>
+    <ProjectGuid>{4C604938-1840-4632-BDA9-978AC5C1464B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Modelo</RootNamespace>
-    <AssemblyName>Modelo</AssemblyName>
+    <RootNamespace>Persistencia</RootNamespace>
+    <AssemblyName>Persistencia</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -51,10 +51,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cadastros\Fabricante.cs" />
-    <Compile Include="Cadastros\Produto.cs" />
+    <Compile Include="Context\EFContext.cs" />
+    <Compile Include="DAL\Cadastros\FabricanteDAL.cs" />
+    <Compile Include="DAL\Cadastros\ProdutoDAL.cs" />
+    <Compile Include="DAL\Tabelas\CategoriaDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tabelas\Categoria.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Modelo\Modelo.csproj">
+      <Project>{672fb8d0-e5f9-4f36-aec1-e975ad354457}</Project>
+      <Name>Modelo</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
