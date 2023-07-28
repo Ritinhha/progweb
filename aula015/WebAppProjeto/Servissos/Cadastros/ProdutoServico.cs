@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Servissos.Cadastros
+namespace servico.Cadastros
 {
-    class ProdutoServico
+    public class ProdutoServico
     {
         private ProdutoDAL produtoDAL = new ProdutoDAL();
         public IQueryable<Produto> ObterProdutosClassificadosPorNome()

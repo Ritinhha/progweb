@@ -3,97 +3,114 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using WebAppProjetoB2023.Models;
+//using WebAppProjetoB2023.Models;
 using System.Net; // pro " new HttpStatusCodeResult(HttpStatusCode.BadRequest) " funcionar
 using System.Data.Entity;
 using Modelo.Tabelas;
 using Modelo.Cadastros;
+using servico.Tabelas;
+using servico.Cadastros;
 
 namespace WebAppProjetoB2023.Controllers
 {
     public class FabricantesController : Controller
     {
-        private EFContext context = new EFContext();
+        //EFContext context = new EFContext();
+        private ProdutoServico produtoServico = new ProdutoServico();
+        private CategoriaServico categoriaServico = new CategoriaServico();
+        private FabricanteServico fabricanteServico = new FabricanteServico();
+
+        private ActionResult ObterVisaoFabricantePorId(long? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Fabricante fabricante = fabricanteServico.ObterFabricantePorId((long)id);
+            if (fabricante == null)
+            {
+                return HttpNotFound();
+            }
+            return View(fabricante);
+        }
+       // private EFContext context = new EFContext();
         // GET: Fabricantes
         public ActionResult Index()
         {
-            return View(context.Fabricantes.OrderBy(c => c.Nome));
+            return View(fabricanteServico.ObterFabricantesClassificadosPorNome());
         }
 
         public ActionResult Create()
         {
             return View();
         }
+
+
         public ActionResult Edit(long? id)
         {//a interrogação indica que esse parametro não é obrigatorio
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Fabricante fabricante = context.Fabricantes.Find(id);// se não achar retorna um valor nulo
-            if (fabricante == null)
-            {
-                return HttpNotFound();
-            }
-            return View(fabricante);
+            return ObterVisaoFabricantePorId(id);
         }
+
+
+
         public ActionResult Details(long? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Fabricante fabricante = context.Fabricantes.Where(f => f.FabricanteId == id).Include("Produtos.Categoria").First();
-            if (fabricante == null)
-            {
-                return HttpNotFound();
-            }
-            return View(fabricante);
+            return ObterVisaoFabricantePorId(id);
         }
+
+
         public ActionResult Delete(long? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Fabricante fabricante = context.Fabricantes.Find(id);
-            if (fabricante == null)
-            {
-                return HttpNotFound();
-            }
-            return View(fabricante);
+            return ObterVisaoFabricantePorId(id);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Fabricante fabricante)
         {
-            context.Fabricantes.Add(fabricante);
-            context.SaveChanges();
-            TempData["Message"] = "O FABRICANTE " + fabricante.Nome.ToUpper() + " FOI ADICIONADO";
-            return RedirectToAction("Index");
+            return GravarFabricante(fabricante);
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Fabricante fabricante)
         {
-            if (ModelState.IsValid)//verifica se esse objeto foi preenchido corretamente
-            {
-                context.Entry(fabricante).State = EntityState.Modified;//marca o objeto de forma que indique que seu estado esta alterado
-                context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(fabricante);
+            return GravarFabricante(fabricante);
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(long id)
+        public ActionResult Delete(int id, FormCollection collection)
         {
-            Fabricante fabricante = context.Fabricantes.Find(id);
-            context.Fabricantes.Remove(fabricante);
-            context.SaveChanges();
-            TempData["Message"] = "O FABRICANTE " + fabricante.Nome.ToUpper() + " FOI DELETADO";
-            return RedirectToAction("Index");
+            try
+            {
+                Fabricante fabricante = fabricanteServico.EliminarFabricantePorId(id);
+                TempData["Message"] = "Fabricante" + fabricante.Nome.ToUpper() + " foi removido";
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        private ActionResult GravarFabricante(Fabricante fabricante)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    fabricanteServico.GravarFabricante(fabricante);
+                    return RedirectToAction("Index");
+                }
+                return View(fabricante);
+            }
+            catch
+            {
+                return View(fabricante);
+            }
         }
     }
 }

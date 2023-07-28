@@ -9,7 +9,8 @@ using System.Net;
 using System.IO;
 using Modelo.Tabelas;
 using Modelo.Cadastros;
-using 
+using servico.Cadastros;
+using servico.Tabelas;
 
 namespace WebAppProjetoB2023.Controllers
 {
@@ -21,6 +22,7 @@ namespace WebAppProjetoB2023.Controllers
         private ProdutoServico produtoServico = new ProdutoServico();
         private CategoriaServico categoriaServico = new CategoriaServico();
         private FabricanteServico fabricanteServico = new FabricanteServico();
+
         private ActionResult ObterVisaoProdutoPorId(long? id)
         {
             if (id == null)
@@ -34,83 +36,67 @@ namespace WebAppProjetoB2023.Controllers
             }
             return View(produto);
         }
+        private void PopularViewBag(Produto produto = null)
+        {
+            if (produto == null)
+            {
+                ViewBag.CategoriaId = new SelectList(categoriaServico.ObterCategoriasClassificadasPorNome(),
+                "CategoriaId", "Nome");
+                ViewBag.FabricanteId = new SelectList(fabricanteServico.ObterFabricantesClassificadosPorNome(),
+                "FabricanteId", "Nome");
+            }
+            else
+            {
+                ViewBag.CategoriaId = new SelectList(categoriaServico.ObterCategoriasClassificadasPorNome(),
+                "CategoriaId", "Nome", produto.CategoriaId);
+                ViewBag.FabricanteId = new SelectList(fabricanteServico.ObterFabricantesClassificadosPorNome(),
+                "FabricanteId", "Nome", produto.FabricanteId);
+            }
+        }
         public ActionResult Index()
         {
             //var produtos = context.Produtos.Include(c => c.Categoria).Include(f => f.Fabricante).OrderBy(n => n.Nome);//
             //return View(context.Produtos.OrderBy(p => p.Nome));
-            return View(produtoServico.ClassificadosorNome);
+            return View(produtoServico.ObterProdutosClassificadosPorNome());
         }
         public ActionResult Create()
         {
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(c => c.Nome), "CategoriaId", "Nome");
-            //ViewBag.chave_estrangeira = new SelectList(context.tabela.OrderBy(c => c.Nome), "chave", "mascara/nome_visivel");
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(f => f.Nome), "FabricanteId", "Nome");
+            PopularViewBag();
             return View();
         }
         public ActionResult Edit(long? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produto p = context.Produtos.Find(id);
-            if (p == null)
-                return HttpNotFound();
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(c => c.Nome), "CategoriaId", "Nome", p.CategoriaId);
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(f => f.Nome), "FabricanteId", "Nome", p.FabricanteId);
-            return View(p);
+            PopularViewBag(produtoServico.ObterProdutoPorId((long)id));
+            return ObterVisaoProdutoPorId(id);
         }
         public ActionResult Details(long? id)
         {
-            if (id == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Produto p = context.Produtos.Where(pr => pr.ProdutoId == id).Include(c => c.Categoria).Include(f => f.Fabricante).First();
-            if (p == null)
-                HttpNotFound();
-            return View(p);
+            return ObterVisaoProdutoPorId(id);
         }
         public ActionResult Delete(long? id)
         {
-            if (id == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Produto p = context.Produtos.Where(pr => pr.ProdutoId == id).Include(c => c.Categoria).Include(f => f.Fabricante).First();
-            if (p == null)
-                HttpNotFound();
-            return View(p);
+            return ObterVisaoProdutoPorId(id);
         }
 
 
         [HttpPost]
         public ActionResult Create(Produto produto)
         {
-            try
-            {
-                context.Produtos.Add(produto);
-                context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View(produto);
-            }
+            return GravarProduto(produto);
         }
-
         [HttpPost]
         public ActionResult Edit(Produto produto,
-HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
+        HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         {
-            return GravarProduto(produto, logotipo, chkRemoverImagem);
+            return GravarProduto(produto, logotipo, chkRemoverImagem));
         }
-
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
             try
             {
-                Produto p = context.Produtos.Find(id);
-                context.Produtos.Remove(p);
-                context.SaveChanges();
-                TempData["Message"] = "O PRODUTO " + p.Nome.ToUpper() + " FOI REMOVIDO";
+                Produto produto = produtoServico.EliminarProdutoPorId(id);
+                TempData["Message"] = "Produto " + produto.Nome.ToUpper() + " foi removido";
                 return RedirectToAction("Index");
             }
             catch
@@ -118,25 +104,23 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
                 return View();
             }
         }
-
         //Metodos
 
-        public void GravarProduto(Produto produto)
+        private ActionResult GravarProduto(Produto produto)
         {
-            if (produto.ProdutoId == null)
+            try
             {
-                context.Produtos.Add(produto);
+                if (ModelState.IsValid)
+                {
+                    produtoServico.GravarProduto(produto);
+                    return RedirectToAction("Index");
+                }
+                return View(produto);
             }
-            else
+            catch
             {
-                context.Entry(produto).State = EntityState.Modified;
+                return View(produto);
             }
-            context.SaveChanges();
-        }
-        private void PopularViewBag(Produto produto = null)
-        {
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(c => c.Nome), "CategoriaId", "Nome", produto.CategoriaId);
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(f => f.Nome), "FabricanteId", "Nome", produto.FabricanteId);
         }
         private byte[] SetLogotipo(HttpPostedFileBase logotipo)
         {
@@ -145,14 +129,10 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
             return bytesLogotipo;
 
         }
-        public Produto ObterProdutoPorId(long id)//Encontra o Produto com a imagem
-        {
-            return context.Produtos.Where(p => p.ProdutoId == id).Include(c => c.Categoria).
-            Include(f => f.Fabricante).First();
-        }
+
         public FileContentResult GetLogotipo(long id)//retorna a imagem, não salva no servidor, mas sim no BD
         {
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
             if (produto != null)
             {
                 return File(produto.Logotipo, produto.LogotipoMimeType);
@@ -163,7 +143,7 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         {
             try
             {
-                Produto produto = ObterProdutoPorId(id);
+                Produto produto = produtoServico.ObterProdutoPorId(id);
                 FileStream fileStream = new FileStream(Server.MapPath(
                 "~/App_Data/" + produto.NomeArquivo), FileMode.Create, FileAccess.Write);//cria um arquivo na pasta padrao
                 fileStream.Write(produto.Logotipo, 0,
@@ -179,7 +159,7 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         }
         public FileContentResult GetLogotipo2(long id)//so salva no servidor, mas não no BD
         {
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
             if (produto != null)
             {
                 if (produto.NomeArquivo != null)
@@ -196,7 +176,7 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         }
         public ActionResult DownloadArquivo2(long id)
         {
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
             FileStream fileStream = new FileStream(Server.MapPath("~/App_Data/" + produto.NomeArquivo), FileMode.Open, FileAccess.Read);
             return File(fileStream.Name, produto.LogotipoMimeType, produto.NomeArquivo);
         }
@@ -237,7 +217,6 @@ HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
                 return View(produto);
             }
         }
-
 
     }
 
