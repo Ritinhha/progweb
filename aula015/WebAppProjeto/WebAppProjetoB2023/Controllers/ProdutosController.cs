@@ -88,7 +88,7 @@ namespace WebAppProjetoB2023.Controllers
         public ActionResult Edit(Produto produto,
         HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         {
-            return GravarProduto(produto, logotipo, chkRemoverImagem));
+            return GravarProduto(produto, logotipo, chkRemoverImagem);
         }
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
