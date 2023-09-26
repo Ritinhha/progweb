@@ -1,17 +1,31 @@
 ﻿
+@model Modelo.Tabelas.Categoria
+
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Visualizando detalhes de uma CATEGORIA";
 }
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Delete</title>
-</head>
-<body>
-    <div> 
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Dados da categoria a ser removido
     </div>
-</body>
-</html>
+    <div class="panel-body">
+        @Html.Partial("~/Areas/tabelas/Views/Categorias/_PartialDetailsContentPanel.cshtml", Model)
+    </div>
+    <div class="panel-footer panel-info">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <input type="submit" value="Remover CATEGORIA" class="btn btn-danger" />
+            @Html.ActionLink("Retornar para a listagem", "Index", null, new { @class = "btn btn-info" })
+        }
+    </div>
+</div>
+@section ScriptPage{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('li').removeClass("active");
+            $('#liCategorias').addClass("active");
+        });
+    </script>
+}
