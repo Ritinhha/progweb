@@ -213,6 +213,7 @@
     <Content Include="Areas\tabelas\Views\Categorias\Edit.cshtml" />
     <Content Include="Areas\tabelas\Views\Categorias\_PartialDetailsContentPanel.cshtml" />
     <Content Include="Areas\Seguranca\Views\web.config" />
+    <Content Include="Areas\Seguranca\Views\Admin\Index.cshtml" />
     <None Include="Scripts\jquery-2.2.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -257,8 +258,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Cadastros\CadastrosAreaRegistration.cs" />
+    <Compile Include="Areas\Seguranca\Controllers\AdminController.cs" />
     <Compile Include="Areas\Seguranca\Models\Usuario.cs" />
     <Compile Include="Areas\Seguranca\SegurancaAreaRegistration.cs" />
     <Compile Include="Areas\tabelas\tabelasAreaRegistration.cs" />
@@ -268,6 +271,7 @@
     <Compile Include="Controllers\HomesController.cs" />
     <Compile Include="Areas\Cadastros\Controllers\ProdutosController.cs" />
     <Compile Include="DAL\IdentityDbContextAplicacao.cs" />
+    <Compile Include="GerenciadorUsuario.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -313,7 +317,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Cadastros\Models\" />
     <Folder Include="Areas\Cadastros\Views\Shared\" />
-    <Folder Include="Areas\Seguranca\Controllers\" />
     <Folder Include="Areas\Seguranca\Views\Shared\" />
     <Folder Include="Areas\tabelas\Models\" />
     <Folder Include="Areas\tabelas\Views\Shared\" />
