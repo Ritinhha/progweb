@@ -182,6 +182,7 @@
     <Content Include="Content\DataTables-1.10.2\images\xls_hover.png" />
     <Content Include="Content\DataTables-1.10.2\swf\copy_csv_xls.swf" />
     <Content Include="Content\DataTables-1.10.2\swf\copy_csv_xls_pdf.swf" />
+    <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -214,6 +215,12 @@
     <Content Include="Areas\tabelas\Views\Categorias\_PartialDetailsContentPanel.cshtml" />
     <Content Include="Areas\Seguranca\Views\web.config" />
     <Content Include="Areas\Seguranca\Views\Admin\Index.cshtml" />
+    <Content Include="Areas\Seguranca\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Seguranca\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Seguranca\Views\Admin\Create.cshtml" />
+    <Content Include="Areas\Seguranca\Views\Admin\Edit.cshtml" />
+    <Content Include="Areas\Seguranca\Views\Admin\Details.cshtml" />
+    <Content Include="Areas\Seguranca\Views\Admin\Delete.cshtml" />
     <None Include="Scripts\jquery-2.2.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -262,6 +269,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Cadastros\CadastrosAreaRegistration.cs" />
     <Compile Include="Areas\Seguranca\Controllers\AdminController.cs" />
+    <Compile Include="Areas\Seguranca\Models\SegurancaViewModels.cs" />
     <Compile Include="Areas\Seguranca\Models\Usuario.cs" />
     <Compile Include="Areas\Seguranca\SegurancaAreaRegistration.cs" />
     <Compile Include="Areas\tabelas\tabelasAreaRegistration.cs" />
@@ -317,7 +325,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Cadastros\Models\" />
     <Folder Include="Areas\Cadastros\Views\Shared\" />
-    <Folder Include="Areas\Seguranca\Views\Shared\" />
     <Folder Include="Areas\tabelas\Models\" />
     <Folder Include="Areas\tabelas\Views\Shared\" />
   </ItemGroup>

@@ -8,7 +8,7 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using WebAppProjetoB2023.DAL;
 
-namespace WebAppProjetoB2023.App_Start
+namespace WebAppProjetoB2023
 {
     public class IdentityConfig
     {
