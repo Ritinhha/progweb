@@ -1,0 +1,35 @@
+﻿@model Modelo.Cadastros.Produto
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Registrando um novo jogo";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Registro de um novo jogo
+        </div>
+        <div class="panel-body">
+            @Html.Partial("~/Areas/Cadastros/Views/Produtos/_PartialEditContentPanel.cshtml", Model)
+        </div>
+        <div class="panel-footer panel-info">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Adicionar jogo" class="btn btn-danger" />
+                @Html.ActionLink("Retornar para a listagem de jogos", "Index", null,
+                new { @class = "btn btn-warning" })
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+}
+@section ScriptPage {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('li').removeClass("active");
+            $('#liProdutos').addClass("active");
+        });
+    </script>
+}
