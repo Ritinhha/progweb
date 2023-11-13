@@ -6,8 +6,7 @@ using System.Web;
 
 namespace WebAppProjetoB2023.Areas.Seguranca.Models
 {
-    public class SegurancaViewModels
-    {
+ 
         public class UsuarioViewModel
         {
             public string Id { get; set; }
@@ -18,5 +17,4 @@ namespace WebAppProjetoB2023.Areas.Seguranca.Models
             [Required]
             public string Senha { get; set; }
         }
-    }
 }
